@@ -1,0 +1,2 @@
+flask
+mlflow==1.11.0

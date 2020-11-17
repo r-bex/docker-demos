@@ -1,0 +1,41 @@
+version: "3.5"
+
+services:
+  kafka:
+    image: spotify/kafka
+    hostname: kafka
+    environment:
+        ADVERTISED_HOST: kafka
+        ADVERTISED_PORT: 9092
+        CONSUMER_THREADS: 1
+    expose:
+      - 2181
+      - 9092
+    ports:
+      - 2181:2181
+      - 9092:9092
+
+  fake_stream:
+    build:
+        context: ./data
+        dockerfile: ./Dockerfile
+    hostname: fake_stream
+    depends_on:
+      - kafka
+    environment:
+      kafka_server: kafka
+      kafka_port: 9092
+      kafka_topic: temperatures
+
+  predictor:
+      build:
+          context: ./predictor
+          dockerfile: ./Dockerfile
+      hostname: predictor_service
+      depends_on:
+          - kafka
+          - fake_stream
+      environment:
+        kafka_server: kafka
+        kafka_port: 9092
+        kafka_topic: temperatures
