@@ -4,4 +4,4 @@ COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 COPY . /.
 
-ENTRYPOINT ["python", "producer.py"]
+CMD ["python", "producer.py"]

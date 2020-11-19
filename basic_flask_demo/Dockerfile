@@ -6,5 +6,5 @@ COPY . /.
 
 EXPOSE 5000
 
-ENTRYPOINT ["python", "server.py"]
+CMD ["python", "server.py"]
 
