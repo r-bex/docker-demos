@@ -25,7 +25,7 @@ services:
     environment:
       kafka_server: kafka
       kafka_port: 9092
-      kafka_topic: temperatures
+      kafka_topic: tweets
 
   predictor:
       build:
@@ -38,4 +38,4 @@ services:
       environment:
         kafka_server: kafka
         kafka_port: 9092
-        kafka_topic: temperatures
+        kafka_topic: tweets
