@@ -1,2 +1,1 @@
-flask
-mlflow==1.11.0
+flask==1.1.2
