@@ -1,38 +1,36 @@
 import datetime as dt
 import logging
 import numpy as np
+import os
 import random
-
-from utils import make_hour_data, condense_anomalous_periods
 
 logging.basicConfig()
 logger = logging.getLogger('logger')
 logger.setLevel("INFO")
 
+STDEV_THRESHOLD = os.environ.get("stdev_threshold", 1)
+
 def get_data_from_last_n_hours(num_hours):
-    start_of_current_hour = dt.datetime.now().replace(minute=0, second=0)
-    hour_starts = [start_of_current_hour - dt.timedelta(hours=h) for h in range(num_hours, 0, -1)]
-    logger.info("Loading data for {} hours: {}".format(num_hours, str(hour_starts)))
-    
-    total_values = []
-    for hour_start in hour_starts:
-        hour_values = make_hour_data(hour_start)
-        total_values += hour_values
-    return total_values
+    run_timestamp = dt.datetime.now().replace(minute=0, second=0, microsecond=0)
+    values = []
+    for minute in range(0, 60*num_hours):
+        ts = run_timestamp - dt.timedelta(minutes=minute)
+        values.append((ts, random.random()))
+    return values[::-1]
 
 def detect_anomalies(value_data):
     values = [value for (minute, value) in value_data]
     avg_val = np.mean(values)
     stdev = np.std(values)
 
-    labelled_values = [(minute, value, abs(value - avg_val) > stdev*1) for (minute, value) in value_data]
+    labelled_values = [(minute, value, abs(value - avg_val) > stdev*STDEV_THRESHOLD) for (minute, value) in value_data]
     return labelled_values
 
 def write_out_predictions(labelled_data):
-    condensed_periods = condense_anomalous_periods(labelled_data)
-    for (start, end) in condensed_periods:
-        logger.info("{} - {}".format(start, end))
-    logger.info("Wrote {} anomalous periods to file".format(len(condensed_periods)))
+    only_anom = [(ts, val) for (ts, val, anom) in labelled_data if anom]
+    for (timestamp, value) in only_anom:
+        logger.info("ANOMALY: {} - {}".format(timestamp, value))
+    logger.info("Wrote {} anomalous points to file".format(len(only_anom)))
 
 
 if __name__ == "__main__":
