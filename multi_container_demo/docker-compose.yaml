@@ -4,16 +4,13 @@ services:
   kafka:
     image: spotify/kafka
     hostname: kafka
-    environment:
-        ADVERTISED_HOST: kafka
-        ADVERTISED_PORT: 9092
-        CONSUMER_THREADS: 1
-    expose:
-      - 2181
-      - 9092
     ports:
       - 2181:2181
       - 9092:9092
+    environment:
+      - ADVERTISED_HOST: kafka
+      - ADVERTISED_PORT: 9092
+      - CONSUMER_THREADS: 1
 
   fake_stream:
     build:
