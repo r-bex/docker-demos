@@ -26,7 +26,7 @@ def connect_to_kafka(connection_type, address, topic=None, logger=None):
                 connection = KafkaProducer(bootstrap_servers=[address])
 
             connected_to_kafka = True
-            logger.info("Connected to Kafka! Created a producer")
+            logger.info("Connected to Kafka! Created a {}".format(connection_type))
         except Exception as e:
             if attempted_connections < 5:
                 attempted_connections += 1
@@ -41,7 +41,7 @@ def connect_to_kafka(connection_type, address, topic=None, logger=None):
                     .format(address, attempted_connections))
                 break
 
-    assert connection, "Couldn't create a kafka producer. Exiting"
+    assert connection, "Couldn't create a kafka {}. Exiting".format(connection_type)
     return connection
 
 
